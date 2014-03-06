@@ -1,10 +1,11 @@
 # cprofilev
+Thin wrapper for viewing python cProfile output
 __Super flaky implementation.__
 
-# Dependencies
+## Dependencies
 - bottle (`pip install bottle`)
 
-# Usage
+## Usage
 1. run python script with `-m cProfile -o output_file` flags
 
 ```sh
@@ -20,8 +21,7 @@ $ ./cprofilev.py /path/to/out.profile
 
 3. navigate to http://localhost:8080
 
-
-# TODO
+## TODO
 - Clean up code
 - Write tests
 - Publish as a python package
