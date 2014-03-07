@@ -5,7 +5,6 @@ from pstats import Stats
 from StringIO import StringIO
 import argparse
 import re
-from version import VERSION
 
 
 stats_template = """\
@@ -170,7 +169,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Thin wrapper for viewing python cProfile output.')
 
-    parser.add_argument('--version', action='version', version=VERSION)
+    parser.add_argument('--version', action='version', version='0.0.6')
 
     parser.add_argument('-v', '--verbose', action='store_const', const=True)
     parser.add_argument('-p', '--port', type=int, default=4000,

@@ -1,14 +1,8 @@
 from setuptools import setup, find_packages
 
-import os
-import sys
-cur_dir = os.path.dirname(__file__)
-sys.path.insert(0, os.path.join(cur_dir, 'src'))
-from version import VERSION
-
 setup(
     name='CProfileV',
-    version=VERSION,
+    version='0.0.6',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
