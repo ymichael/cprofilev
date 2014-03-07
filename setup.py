@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 from src.version import VERSION
 
 setup(
@@ -7,7 +7,8 @@ setup(
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
-    packages=['src'],
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     install_requires=["bottle"],
     entry_points="""
     [console_scripts]
