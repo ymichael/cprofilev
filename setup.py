@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='CProfileV',
-    version='0.0.10',
+    version='0.0.11',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
