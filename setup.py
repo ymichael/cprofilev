@@ -13,7 +13,6 @@ setup(
     """,
     license='MIT',
     description='Thin wrapper for viewing python cProfile output',
-    long_description=open('README.rst').read(),
     install_requires=["bottle"],
     classifiers=[
         'Development Status :: 4 - Beta',
