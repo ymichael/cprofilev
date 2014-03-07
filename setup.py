@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='cprofilev',
+    name='CProfileV',
     version='0.0.10',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
