@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='CProfileV',
@@ -7,6 +7,7 @@ setup(
     author='Michael Yong',
     author_email='wrong92@gmail.com',
     install_requires=["bottle"],
+    packages = ['src'],
     entry_points={
         'console_scripts': [
             'cprofilev = cprofilev:main',

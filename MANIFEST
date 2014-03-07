@@ -2,3 +2,5 @@
 CHANGES.txt
 LICENSE.txt
 setup.py
+src/__init__.py
+src/cprofilev.py
