@@ -2,10 +2,11 @@ from distutils.core import setup
 
 setup(
     name='CProfileV',
-    version='0.0.8',
+    version='0.0.9',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
+    packages=['cprofilev'],
     install_requires=["bottle"],
     entry_points={
         'console_scripts': [
