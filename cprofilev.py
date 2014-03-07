@@ -10,70 +10,33 @@ import re
 stats_template = """\
     <html>
         <head>
-            <title>cProfile Results</title>
+            <title>{{ filename }} | cProfile Results</title>
         </head>
         <body>
             <pre>{{ !stats }}</pre>
-            <br/>
-            <pre>{{ !callers }}</pre>
-            <br/>
-            <pre>{{ !callees }}</pre>
+
+            % if callers:
+                <h2>Called By:</h2>
+                <pre>{{ !callers }}</pre>
+
+            % if callees:
+                <h2>Called:</h2>
+                <pre>{{ !callees }}</pre>
         </body>
     </html>"""
 
-SORT_ARGS = ['ncalls', 'cumtime', 'tottime', 'filename']
+
+SORT_KEY = 'sort'
+FUNC_NAME_KEY = 'func_name'
 
 
 def get_href(key, val):
     href = '?'
-    request.query[key] = val
-    for key in request.query.keys():
-        href += '%s=%s&' % (key, request.query.get(key))
+    query = dict(request.query)
+    query[key] = val
+    for key in query.keys():
+        href += '%s=%s&' % (key, query[key])
     return href[:-1]
-
-
-def process_stats(stats):
-    result = []
-    pattern = r'(.*)\((.*)\)$'
-    for line in stats.split('\n'):
-        if 'ncalls' in line:
-            for sort_arg in SORT_ARGS:
-                line = line.replace(sort_arg,
-                    '<a href="%s">%s</a>' %
-                    (get_href('sort', sort_arg), sort_arg))
-        match = re.search(pattern, line)
-        if match and match.group(2) not in ['function', '']:
-            line = match.group(1) + \
-                '(<a href="%s">%s</a>)' % \
-                (get_href('func', match.group(2)), match.group(2))
-        result.append(line)
-    return '\n'.join(result)
-
-# @route('/')
-# def index():
-#     sort = request.query.sort or 'cumulative'
-#     global_obj['stats_obj'].sort_stats(sort)
-#     global_obj['stats_obj'].print_stats(request.query.func)
-#     stats = global_obj['stats_obj'].read_value()
-#
-#     if request.query.func:
-#         func = request.query.func
-#         global_obj['stats_obj'].print_callers(func)
-#         callers = global_obj['stats_obj'].read_value()
-#
-#         global_obj['stats_obj'].print_callees(func)
-#         callees = global_obj['stats_obj'].read_value()
-#     else:
-#         callers = ''
-#         callees = ''
-#
-#     data = {
-#         'filename': global_obj['cprofile_output'],
-#         'stats': process_stats(stats),
-#         'callers': process_stats(callers),
-#         'callees': process_stats(callees),
-#     }
-#     return template(stats_template, **data)
 
 
 class CProfileVStats(object):
@@ -89,12 +52,79 @@ class CProfileVStats(object):
     def read(self):
         value = self.obj.stream.getvalue()
         self.reset_stream()
+
+        # process stats output
+        value = self._process_header(value)
+        value = self._process_lines(value)
         return value
+
+    IGNORE_FUNC_NAMES = ['function', '']
+    STATS_LINE_REGEX = r'(.*)\((.*)\)$'
+    HEADER_LINE_REGEX = r'ncalls|percall|tottime|cumtime'
+    DEFAULT_SORT_ARG = 'cumulative'
+    SORT_ARGS = {
+        'ncalls': 'ncalls',
+        'percall': 'pcalls',
+        'tottime': 'tottime',
+        'cumtime': 'cumtime',
+        'filename': 'filename',
+        'lineno': 'nfl',
+    }
+
+    @classmethod
+    def _process_header(cls, output):
+        result = []
+        lines = output.splitlines(True)
+        for idx, line in enumerate(lines):
+            match = re.search(cls.HEADER_LINE_REGEX, line)
+            if match:
+                for key, val in cls.SORT_ARGS.iteritems():
+                    url_link = template(
+                        "<a href='{{ url }}'>{{ key }}</a>",
+                        url=get_href(SORT_KEY, val),
+                        key=key)
+                    line = line.replace(key, url_link)
+                lines[idx] = line
+                break
+        return ''.join(lines)
+
+    @classmethod
+    def _process_lines(cls, output):
+        lines = output.splitlines(True)
+        for idx, line in enumerate(lines):
+            match = re.search(cls.STATS_LINE_REGEX, line)
+            if match:
+                prefix = match.group(1)
+                func_name = match.group(2)
+
+                if func_name not in cls.IGNORE_FUNC_NAMES:
+                    url_link = template(
+                        "<a href='{{ url }}'>{{ func_name }}</a>",
+                        url=get_href(FUNC_NAME_KEY, func_name),
+                        func_name=func_name)
+
+                    lines[idx] = template(
+                        "{{ prefix }}({{ !url_link }})\n",
+                        prefix=prefix, url_link=url_link)
+
+        return ''.join(lines)
 
     def show(self, restriction=''):
         self.obj.print_stats(restriction)
         return self
 
+    def show_callers(self, func_name):
+        self.obj.print_callers(func_name)
+        return self
+
+    def show_callees(self, func_name):
+        self.obj.print_callees(func_name)
+        return self
+
+    def sort(self, sort=''):
+        sort = sort or self.DEFAULT_SORT_ARG
+        self.obj.sort_stats(sort)
+        return self
 
 
 class CProfileV(object):
@@ -108,14 +138,24 @@ class CProfileV(object):
         # init route.
         self.app.route('/')(self.route_handler)
 
+
     def route_handler(self):
-        stats = self.stats_obj.show().read()
-        callers = ''
-        callees = ''
+        func_name = request.query.get(FUNC_NAME_KEY) or ''
+        sort = request.query.get(SORT_KEY) or ''
+
+        stats = self.stats_obj.sort(sort).show(func_name).read()
+        if func_name:
+            callers = self.stats_obj.sort(sort).show_callers(func_name).read()
+            callees = self.stats_obj.sort(sort).show_callees(func_name).read()
+        else:
+            callers = ''
+            callees = ''
+
         data = {
-            'stats': process_stats(stats),
-            'callers': process_stats(callers),
-            'callees': process_stats(callees),
+            'filename': self.cprofile_output,
+            'stats': stats,
+            'callers': callers,
+            'callees': callees,
         }
         return template(stats_template, **data)
 
@@ -128,8 +168,10 @@ class CProfileV(object):
 def main():
     parser = argparse.ArgumentParser(
         description='Thin wrapper for viewing python cProfile output.')
+
     # TODO(michael): Read version from some config file.
     parser.add_argument('--version', action='version', version='0.0.1')
+
     parser.add_argument('-v', '--verbose', action='store_const', const=True)
     parser.add_argument('-p', '--port', type=int, default=4000,
         help='specify the port to listen on. (defaults to 4000)')
