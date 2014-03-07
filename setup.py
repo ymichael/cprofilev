@@ -1,4 +1,9 @@
 from setuptools import setup, find_packages
+
+import os
+import sys
+cur_dir = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(cur_dir, 'src'))
 from version import VERSION
 
 setup(
