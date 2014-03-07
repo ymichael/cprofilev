@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: CProfileV
-Version: 0.0.3
+Version: 0.0.4
 Summary: Thin wrapper for viewing python cProfile output
 Home-page: https://github.com/ymichael/cprofilev
 Author: Michael Yong
