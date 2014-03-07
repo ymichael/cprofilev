@@ -1,13 +1,11 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 setup(
     name='CProfileV',
-    version='0.0.7',
+    version='0.0.8',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
     install_requires=["bottle"],
     entry_points={
         'console_scripts': [
