@@ -2,17 +2,18 @@ from setuptools import setup, find_packages
 
 setup(
     name='CProfileV',
-    version='0.0.6',
+    version='0.0.7',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     install_requires=["bottle"],
-    entry_points="""
-    [console_scripts]
-    cprofilev = cprofilev:main
-    """,
+    entry_points={
+        'console_scripts': [
+            'cprofilev = cprofilev:main',
+        ]
+    },
     license='MIT',
     description='Thin wrapper for viewing python cProfile output',
     classifiers=[
