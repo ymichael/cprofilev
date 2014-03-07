@@ -2,15 +2,15 @@ from setuptools import setup
 
 setup(
     name='CProfileV',
-    version='0.0.11',
+    version='0.0.12',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
     install_requires=["bottle"],
-    packages = ['src'],
+    packages = ['cprofilev'],
     entry_points={
         'console_scripts': [
-            'cprofilev = cprofilev:main',
+            'cprofilev = cprofilev.cprofilev:main',
         ]
     },
     license='MIT',
