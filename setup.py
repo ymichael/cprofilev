@@ -1,8 +1,9 @@
 from distutils.core import setup
+from src.cprofilev import VERSION
 
 setup(
     name='CProfileV',
-    version='0.0.1',
+    version=VERSION,
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
