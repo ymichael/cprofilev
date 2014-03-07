@@ -6,7 +6,8 @@ setup(
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
-    packages=['cprofilev'],
+    packages=['src'],
+    package_dir = {'': 'src'},
     entry_points="""
     [console_scripts]
     cprofilev = cprofilev:main
