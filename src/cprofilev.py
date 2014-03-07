@@ -5,8 +5,8 @@ from pstats import Stats
 from StringIO import StringIO
 import argparse
 import re
+from version import VERSION
 
-VERSION = '0.0.2'
 
 stats_template = """\
     <html>
