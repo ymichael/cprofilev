@@ -1,6 +1,8 @@
 =====
 cprofilev
 =====
+A thin wrapper for viewing python's cProfile output.
+_____
 
 about
 *****
@@ -23,27 +25,32 @@ quickstart
 1. Simply pass the cprofile output file as an argument to `cprofilev`
 
 ::
-    $ cprofilev /path/to/cprofile/output
+
+  $ cprofilev /path/to/cprofile/output
+
 
 2. Navigate to http://localhost:4000
 
 usage
 *****
+
 ::
-    $ cprofilev --help
-    usage: cprofilev.py [-h] [--version] [-v] [-p PORT] cprofile_output
 
-    Thin wrapper for viewing python cProfile output.
+  $ cprofilev --help
+  usage: cprofilev.py [-h] [--version] [-v] [-p PORT] cprofile_output
 
-    positional arguments:
-      cprofile_output       The cProfile output to view.
+  Thin wrapper for viewing python cProfile output.
 
-      optional arguments:
-        -h, --help            show this help message and exit
-        --version             show program's version number and exit
-        -v, --verbose
-        -p PORT, --port PORT  specify the port to listen on. (defaults to 4000)
+  positional arguments:
+    cprofile_output       The cProfile output to view.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show program's version number and exit
+      -v, --verbose
+      -p PORT, --port PORT  specify the port to listen on. (defaults to 4000)
+
 
 Dependencies
 *****
-`bottle <http://bottlepy.org>`_
+`bottle <http://bottlepy.org>`_: used for serving the html page.
