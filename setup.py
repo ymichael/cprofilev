@@ -7,7 +7,6 @@ setup(
     author='Michael Yong',
     author_email='wrong92@gmail.com',
     packages=['src'],
-    package_dir = {'': 'src'},
     entry_points="""
     [console_scripts]
     cprofilev = cprofilev:main
