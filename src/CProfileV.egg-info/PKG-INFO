@@ -1,0 +1,18 @@
+Metadata-Version: 1.1
+Name: CProfileV
+Version: 0.0.3
+Summary: Thin wrapper for viewing python cProfile output
+Home-page: https://github.com/ymichael/cprofilev
+Author: Michael Yong
+Author-email: wrong92@gmail.com
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Bottle
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Testing

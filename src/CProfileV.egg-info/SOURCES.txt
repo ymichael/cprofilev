@@ -1,0 +1,11 @@
+CHANGES.txt
+LICENSE.txt
+MANIFEST.in
+README.rst
+setup.py
+src/CProfileV.egg-info/PKG-INFO
+src/CProfileV.egg-info/SOURCES.txt
+src/CProfileV.egg-info/dependency_links.txt
+src/CProfileV.egg-info/entry_points.txt
+src/CProfileV.egg-info/requires.txt
+src/CProfileV.egg-info/top_level.txt
