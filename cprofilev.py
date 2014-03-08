@@ -6,7 +6,7 @@ from StringIO import StringIO
 import argparse
 import re
 
-VERSION = '0.0.17'
+VERSION = '0.0.18'
 
 __doc__ = """\
 A thin wrapper for viewing python cProfile output.

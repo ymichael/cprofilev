@@ -17,7 +17,7 @@ setup(
     py_modules=['cprofilev'],
     entry_points="""
     [console_scripts]
-    cprofilev = cprofilev.main
+    cprofilev = cprofilev:main
     """,
     install_requires=["bottle"],
     license='MIT',
