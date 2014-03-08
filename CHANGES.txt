@@ -1,1 +1,4 @@
-v0.01, 7 March 2013 -- Initial release.
+v0.0.1, 7 March 2013 -- Initial release.
+
+v0.1.0, 8 March 2013 -- Fix a bunch of bugs related to installation via pip.
+
