@@ -170,7 +170,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Thin wrapper for viewing python cProfile output.')
 
-    parser.add_argument('--version', action='version', version='0.0.13')
+    parser.add_argument('--version', action='version', version='0.0.14')
 
     parser.add_argument('-v', '--verbose', action='store_const', const=True)
     parser.add_argument('-p', '--port', type=int, default=4000,
