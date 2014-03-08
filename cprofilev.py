@@ -162,6 +162,7 @@ class CProfileV(object):
 
     def start(self):
         """Starts bottle server."""
+        print 'cprofilev server listening on port %s' % self.port
         self.app.run(host='localhost', port=self.port, quiet=self.quiet)
 
 
