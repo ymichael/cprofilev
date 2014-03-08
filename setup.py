@@ -9,7 +9,7 @@ if sys.version_info < (2,5):
 
 setup(
     name='CProfileV',
-    version='0.0.12',
+    version='0.0.13',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
