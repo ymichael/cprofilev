@@ -1,5 +1,6 @@
-from setuptools import setup
+from distutils.core import setup
 import sys
+import cprofilev
 
 
 if sys.version_info < (2,5):
@@ -9,12 +10,12 @@ if sys.version_info < (2,5):
 
 setup(
     name='CProfileV',
-    version='0.0.15',
+    version=cprofilev.VERSION,
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
     py_modules=['cprofilev'],
-    scripts = ['cprofilev.py'],
+    scripts=['cprofilev.py'],
     install_requires=["bottle"],
     license='MIT',
     description='Thin wrapper for viewing python cProfile output',

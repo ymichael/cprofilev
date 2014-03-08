@@ -6,6 +6,8 @@ from StringIO import StringIO
 import argparse
 import re
 
+VERSION = '0.0.16'
+
 
 stats_template = """\
     <html>
@@ -170,7 +172,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Thin wrapper for viewing python cProfile output.')
 
-    parser.add_argument('--version', action='version', version='0.0.15')
+    parser.add_argument('--version', action='version', version=VERSION)
 
     parser.add_argument('-v', '--verbose', action='store_const', const=True)
     parser.add_argument('-p', '--port', type=int, default=4000,
