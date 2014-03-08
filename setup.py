@@ -1,4 +1,11 @@
 from setuptools import setup
+import sys
+
+
+if sys.version_info < (2,5):
+    raise NotImplementedError("Sorry, you need at least Python 2.5 \
+        or Python 3.x to use cprofilev.")
+
 
 setup(
     name='CProfileV',
@@ -6,8 +13,9 @@ setup(
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
+    py_modules=['cprofilev'],
+    scripts = ['cprofilev.py'],
     install_requires=["bottle"],
-    packages = ['cprofilev'],
     entry_points={
         'console_scripts': [
             'cprofilev = cprofilev.cprofilev:main',
