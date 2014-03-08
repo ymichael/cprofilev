@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 import sys
 import cprofilev
 
@@ -15,7 +15,10 @@ setup(
     author='Michael Yong',
     author_email='wrong92@gmail.com',
     py_modules=['cprofilev'],
-    scripts=['cprofilev.py'],
+    entry_points="""
+    [console_scripts]
+    cprofilev = cprofilev.main
+    """,
     install_requires=["bottle"],
     license='MIT',
     description='Thin wrapper for viewing python cProfile output',
