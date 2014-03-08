@@ -9,18 +9,13 @@ if sys.version_info < (2,5):
 
 setup(
     name='CProfileV',
-    version='0.0.14',
+    version='0.0.15',
     url='https://github.com/ymichael/cprofilev',
     author='Michael Yong',
     author_email='wrong92@gmail.com',
     py_modules=['cprofilev'],
     scripts = ['cprofilev.py'],
     install_requires=["bottle"],
-    entry_points={
-        'console_scripts': [
-            'cprofilev = cprofilev.cprofilev:main',
-        ]
-    },
     license='MIT',
     description='Thin wrapper for viewing python cProfile output',
     classifiers=[
