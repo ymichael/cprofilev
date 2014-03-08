@@ -22,6 +22,7 @@ setup(
     install_requires=["bottle"],
     license='MIT',
     description='Thin wrapper for viewing python cProfile output',
+    long_description=cprofilev.__doc__,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',

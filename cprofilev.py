@@ -6,7 +6,15 @@ from StringIO import StringIO
 import argparse
 import re
 
-VERSION = '0.0.16'
+VERSION = '0.0.17'
+
+__doc__ = """\
+A thin wrapper for viewing python cProfile output.
+
+It provides a simple html view of the pstats.Stats object that is generated
+from when a python script is run with the -m cProfile flag.
+
+"""
 
 
 stats_template = """\
