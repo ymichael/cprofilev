@@ -1,2 +1,8 @@
 test_profile_output
 venv/
+*.pyc
+*.pyo
+*.log
+dist/
+MANIFEST
+CProfileV.egg-info
