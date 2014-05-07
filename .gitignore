@@ -6,3 +6,4 @@ venv/
 dist/
 MANIFEST
 CProfileV.egg-info
+build/
