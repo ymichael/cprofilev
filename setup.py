@@ -3,10 +3,9 @@ import sys
 
 
 if sys.version_info < (2,5):
-    raise NotImplementedError("Sorry, you need at least Python 2.5 \
-        or Python 3.x to use cprofilev.")
+    raise NotImplementedError("Sorry, you need at least Python 2.5 to use cprofilev.")
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 __doc__ = """\
 A thin wrapper for viewing python cProfile output.
