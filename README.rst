@@ -9,6 +9,8 @@ about
 cprofilev is a  thin wrapper for viewing python's cProfile output. It provides
 a simple html view of the pstats.Stats object that is generated.
 
+See: http://ymichael.com/2014/03/08/profiling-python-with-cprofile.html
+
 installation
 *****
 *on most UNIX-like systems, you'll probably need to run the following
