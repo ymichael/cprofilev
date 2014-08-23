@@ -70,14 +70,13 @@ class CProfileVStats(object):
 
     IGNORE_FUNC_NAMES = ['function', '']
     STATS_LINE_REGEX = r'(.*)\((.*)\)$'
-    HEADER_LINE_REGEX = r'ncalls|percall|tottime|cumtime'
+    HEADER_LINE_REGEX = r'ncalls|tottime|cumtime'
     DEFAULT_SORT_ARG = 'cumulative'
     SORT_ARGS = {
-        'ncalls': 'ncalls',
-        'percall': 'pcalls',
-        'tottime': 'tottime',
-        'cumtime': 'cumtime',
-        'filename': 'filename',
+        'ncalls': 'calls',
+        'tottime': 'time',
+        'cumtime': 'cumulative',
+        'filename': 'module',
         'lineno': 'nfl',
     }
 
