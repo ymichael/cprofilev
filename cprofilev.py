@@ -6,7 +6,7 @@ from StringIO import StringIO
 import argparse
 import re
 
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 
 __doc__ = """\
 A thin wrapper for viewing python cProfile output.
@@ -137,16 +137,17 @@ class CProfileVStats(object):
 
 
 class CProfileV(object):
-    def __init__(self, cprofile_output, port=4000, quiet=True):
+    def __init__(self, cprofile_output, address='127.0.0.1', port=4000,
+                 quiet=True):
         self.cprofile_output = cprofile_output
         self.port = port
+        self.address = address
         self.quiet = quiet
         self.app = Bottle()
         self.stats_obj = CProfileVStats(self.cprofile_output)
 
         # init route.
         self.app.route('/')(self.route_handler)
-
 
     def route_handler(self):
         func_name = request.query.get(FUNC_NAME_KEY) or ''
@@ -168,11 +169,10 @@ class CProfileV(object):
         }
         return template(stats_template, **data)
 
-
     def start(self):
         """Starts bottle server."""
         print 'cprofilev server listening on port %s' % self.port
-        self.app.run(host='localhost', port=self.port, quiet=self.quiet)
+        self.app.run(host=self.address, port=self.port, quiet=self.quiet)
 
 
 def main():
@@ -182,16 +182,21 @@ def main():
     parser.add_argument('--version', action='version', version=VERSION)
 
     parser.add_argument('-v', '--verbose', action='store_const', const=True)
+    parser.add_argument('-a', '--address', type=str, default='127.0.0.1',
+                        help='specify the address to listen on. '
+                        '(defaults to 127.0.0.1)')
     parser.add_argument('-p', '--port', type=int, default=4000,
-        help='specify the port to listen on. (defaults to 4000)')
+                        help='specify the port to listen on. '
+                        '(defaults to 4000)')
     parser.add_argument('cprofile_output', help='The cProfile output to view.')
     args = vars(parser.parse_args())
 
     port = args['port']
+    address = args['address']
     cprofile_output = args['cprofile_output']
     quiet = not args['verbose']
 
-    CProfileV(cprofile_output, port, quiet).start()
+    CProfileV(cprofile_output, address, port, quiet).start()
 
 
 if __name__ == '__main__':
