@@ -39,7 +39,7 @@ usage
 ::
 
   $ cprofilev --help
-  usage: cprofilev.py [-h] [--version] [-v] [-p PORT] cprofile_output
+  usage: cprofilev.py [-h] [--version] [-v] [-a ADDRESS] [-p PORT] cprofile_output
 
   Thin wrapper for viewing python cProfile output.
 
@@ -50,6 +50,9 @@ usage
       -h, --help            show this help message and exit
       --version             show program's version number and exit
       -v, --verbose
+      -a ADDRESS, --address ADDRESS
+                        specify the address to listen on. (defaults to
+                        127.0.0.1)
       -p PORT, --port PORT  specify the port to listen on. (defaults to 4000)
 
 
