@@ -2,9 +2,24 @@
 
 from bottle import Bottle, template, request
 from pstats import Stats
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import argparse
 import re
+import sys
+
+try:
+    dict.iteritems
+except AttributeError:
+    # Python 3
+    def iteritems(d):
+        return iter(d.items())
+else:
+    # Python 2
+    def iteritems(d):
+        return d.iteritems()
 
 VERSION = '0.1.3'
 
@@ -87,7 +102,7 @@ class CProfileVStats(object):
         for idx, line in enumerate(lines):
             match = re.search(cls.HEADER_LINE_REGEX, line)
             if match:
-                for key, val in cls.SORT_ARGS.iteritems():
+                for key, val in iteritems(cls.SORT_ARGS):
                     url_link = template(
                         "<a href='{{ url }}'>{{ key }}</a>",
                         url=get_href(SORT_KEY, val),
@@ -171,7 +186,7 @@ class CProfileV(object):
 
     def start(self):
         """Starts bottle server."""
-        print 'cprofilev server listening on port %s' % self.port
+        sys.stdout.write('cprofilev server listening on port %s\n' % self.port)
         self.app.run(host=self.address, port=self.port, quiet=self.quiet)
 
 
