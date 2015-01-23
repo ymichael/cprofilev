@@ -10,7 +10,7 @@ import argparse
 import re
 
 
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 
 __doc__ = """\
 A thin wrapper for viewing python cProfile output.
