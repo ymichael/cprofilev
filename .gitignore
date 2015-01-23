@@ -8,4 +8,4 @@ MANIFEST
 CProfileV.egg-info
 build/
 tmp.py
-tmp.prof
+*.prof
