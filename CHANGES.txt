@@ -4,3 +4,5 @@ v0.1.0, 8 March 2013 -- Fix a bunch of bugs related to installation via pip.
 
 v0.1.3, 3 December 2014 -- Add listener address argument.
 
+v0.1.4, 23 January 2015 -- Add python3 support.
+
