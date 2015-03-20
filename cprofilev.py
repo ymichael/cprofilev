@@ -1,80 +1,63 @@
 #!/usr/bin/env python
 
-from bottle import Bottle, template, request
-from pstats import Stats
+import argparse
+import bottle
+import cProfile
+import logging
+import os
+import pstats
+import re
+import sys
+import tempfile
+import threading
+
 try:
+    from cStringIO import StringIO
+except ImportError:
     from StringIO import StringIO
 except ImportError:
+    # Python 3 compatibility.
     from io import StringIO
-import argparse
-import re
 
 
-VERSION = '0.1.4'
+VERSION = '1.0.0'
 
 __doc__ = """\
-A thin wrapper for viewing python cProfile output.
+An easier way to use cProfile.
 
-It provides a simple html view of the pstats.Stats object that is generated
-from when a python script is run with the -m cProfile flag.
+Outputs a simpler html view of profiled stats.
+Able to show stats while the code is still running!
 
 """
 
 
-stats_template = """\
-    <html>
-        <head>
-            <title>{{ filename }} | cProfile Results</title>
-        </head>
-        <body>
-            <pre>{{ !stats }}</pre>
+STATS_TEMPLATE = """\
+<html>
+    <head>
+        <title>{{ title }} | cProfile Results</title>
+    </head>
+    <body>
+        <pre>{{ !stats }}</pre>
 
-            % if callers:
-                <h2>Called By:</h2>
-                <pre>{{ !callers }}</pre>
+        % if callers:
+            <h2>Called By:</h2>
+            <pre>{{ !callers }}</pre>
 
-            % if callees:
-                <h2>Called:</h2>
-                <pre>{{ !callees }}</pre>
-        </body>
-    </html>"""
+        % if callees:
+            <h2>Called:</h2>
+            <pre>{{ !callees }}</pre>
+    </body>
+</html>"""
 
 
 SORT_KEY = 'sort'
 FUNC_NAME_KEY = 'func_name'
 
 
-def get_href(key, val):
-    href = '?'
-    query = dict(request.query)
-    query[key] = val
-    for key in query.keys():
-        href += '%s=%s&' % (key, query[key])
-    return href[:-1]
-
-
-class CProfileVStats(object):
+class Stats(object):
     """Wrapper around pstats.Stats class."""
-    def __init__(self, output_file):
-        self.output_file = output_file
-        self.obj = Stats(output_file)
-        self.reset_stream()
-
-    def reset_stream(self):
-        self.obj.stream = StringIO()
-
-    def read(self):
-        value = self.obj.stream.getvalue()
-        self.reset_stream()
-
-        # process stats output
-        value = self._process_header(value)
-        value = self._process_lines(value)
-        return value
 
     IGNORE_FUNC_NAMES = ['function', '']
-    STATS_LINE_REGEX = r'(.*)\((.*)\)$'
-    HEADER_LINE_REGEX = r'ncalls|tottime|cumtime'
     DEFAULT_SORT_ARG = 'cumulative'
     SORT_ARGS = {
         'ncalls': 'calls',
@@ -84,124 +67,169 @@ class CProfileVStats(object):
         'lineno': 'nfl',
     }
 
-    @classmethod
-    def _process_header(cls, output):
-        result = []
+    STATS_LINE_REGEX = r'(.*)\((.*)\)$'
+    HEADER_LINE_REGEX = r'ncalls|tottime|cumtime'
+
+    def __init__(self, profile_output=None, profile_obj=None):
+        self.profile = profile_output or profile_obj
+        self.stream = StringIO()
+        self.stats = pstats.Stats(self.profile, stream=self.stream)
+
+    def read_stream(self):
+        value = self.stream.getvalue()
+        self.stream.seek(0)
+        self.stream.truncate()
+        return value
+
+    def read(self):
+        output = self.read_stream()
         lines = output.splitlines(True)
-        for idx, line in enumerate(lines):
-            match = re.search(cls.HEADER_LINE_REGEX, line)
-            if match:
-                for key, val in cls.SORT_ARGS.items():
-                    url_link = template(
-                        "<a href='{{ url }}'>{{ key }}</a>",
-                        url=get_href(SORT_KEY, val),
-                        key=key)
-                    line = line.replace(key, url_link)
-                lines[idx] = line
-                break
-        return ''.join(lines)
+        return "".join(map(self.process_line, lines))
 
     @classmethod
-    def _process_lines(cls, output):
-        lines = output.splitlines(True)
-        for idx, line in enumerate(lines):
-            match = re.search(cls.STATS_LINE_REGEX, line)
-            if match:
-                prefix = match.group(1)
-                func_name = match.group(2)
+    def process_line(cls, line):
+        if re.search(cls.HEADER_LINE_REGEX, line):
+            for key, val in cls.SORT_ARGS.items():
+                url_link = bottle.template(
+                    "<a href='{{ url }}'>{{ key }}</a>",
+                    url=cls.get_updated_href(SORT_KEY, val),
+                    key=key)
+                line = line.replace(key, url_link)
 
-                if func_name not in cls.IGNORE_FUNC_NAMES:
-                    url_link = template(
-                        "<a href='{{ url }}'>{{ func_name }}</a>",
-                        url=get_href(FUNC_NAME_KEY, func_name),
-                        func_name=func_name)
+        match = re.search(cls.STATS_LINE_REGEX, line)
+        if match:
+            prefix = match.group(1)
+            func_name = match.group(2)
+            if func_name not in cls.IGNORE_FUNC_NAMES:
+                url_link = bottle.template(
+                    "<a href='{{ url }}'>{{ func_name }}</a>",
+                    url=cls.get_updated_href(FUNC_NAME_KEY, func_name),
+                    func_name=func_name)
+                line = bottle.template(
+                    "{{ prefix }}({{ !url_link }})\n",
+                    prefix=prefix, url_link=url_link)
 
-                    lines[idx] = template(
-                        "{{ prefix }}({{ !url_link }})\n",
-                        prefix=prefix, url_link=url_link)
+        return line
 
-        return ''.join(lines)
+    @classmethod
+    def get_updated_href(cls, key, val):
+        href = '?'
+        query = dict(bottle.request.query)
+        query[key] = val
+        for key in query.keys():
+            href += '%s=%s&' % (key, query[key])
+        return href[:-1]
 
     def show(self, restriction=''):
-        self.obj.print_stats(restriction)
+        self.stats.print_stats(restriction)
         return self
 
     def show_callers(self, func_name):
-        self.obj.print_callers(func_name)
+        self.stats.print_callers(func_name)
         return self
 
     def show_callees(self, func_name):
-        self.obj.print_callees(func_name)
+        self.stats.print_callees(func_name)
         return self
 
     def sort(self, sort=''):
         sort = sort or self.DEFAULT_SORT_ARG
-        self.obj.sort_stats(sort)
+        self.stats.sort_stats(sort)
         return self
 
 
 class CProfileV(object):
-    def __init__(self, cprofile_output, address='127.0.0.1', port=4000,
-                 quiet=True):
-        self.cprofile_output = cprofile_output
+    def __init__(self, profile, title, address='127.0.0.1', port=4000):
+        self.profile = profile
+        self.title = title
         self.port = port
         self.address = address
-        self.quiet = quiet
-        self.app = Bottle()
-        self.stats_obj = CProfileVStats(self.cprofile_output)
 
-        # init route.
+        # Setup logger.
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(name)s - %(asctime)s: %(message)s")
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setFormatter(formatter)
+        self.logger.addHandler(stream_handler)
+
+        # Bottle webserver.
+        self.app = bottle.Bottle()
         self.app.route('/')(self.route_handler)
 
     def route_handler(self):
-        func_name = request.query.get(FUNC_NAME_KEY) or ''
-        sort = request.query.get(SORT_KEY) or ''
+        self.stats = Stats(self.profile)
 
-        stats = self.stats_obj.sort(sort).show(func_name).read()
-        if func_name:
-            callers = self.stats_obj.sort(sort).show_callers(func_name).read()
-            callees = self.stats_obj.sort(sort).show_callees(func_name).read()
-        else:
-            callers = ''
-            callees = ''
+        func_name = bottle.request.query.get(FUNC_NAME_KEY) or ''
+        sort = bottle.request.query.get(SORT_KEY) or ''
 
+        self.stats.sort(sort)
+        callers = self.stats.show_callers(func_name).read() if func_name else ''
+        callees = self.stats.show_callees(func_name).read() if func_name else ''
         data = {
-            'filename': self.cprofile_output,
-            'stats': stats,
+            'title': self.title,
+            'stats': self.stats.sort(sort).show(func_name).read(),
             'callers': callers,
             'callees': callees,
         }
-        return template(stats_template, **data)
+        return bottle.template(STATS_TEMPLATE, **data)
 
     def start(self):
-        """Starts bottle server."""
-        print('cprofilev server listening on port %s\n' % self.port)
-        self.app.run(host=self.address, port=self.port, quiet=self.quiet)
+        self.logger.info('cProfile output available at %s:%s' % (self.address, self.port))
+        self.app.run(host=self.address, port=self.port, quiet=True)
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='Thin wrapper for viewing python cProfile output.')
+def main(parser):
+    args = parser.parse_args()
+    if not sys.argv[1:]:
+        parser.print_usage()
+        sys.exit(2)
 
-    parser.add_argument('--version', action='version', version=VERSION)
+    # v0 mode: Render profile output.
+    if args.file:
+        cprofilev = CProfileV(args.file, title=args.file)
+        cprofilev.start()
+        return
 
-    parser.add_argument('-v', '--verbose', action='store_const', const=True)
-    parser.add_argument('-a', '--address', type=str, default='127.0.0.1',
-                        help='specify the address to listen on. '
-                        '(defaults to 127.0.0.1)')
-    parser.add_argument('-p', '--port', type=int, default=4000,
-                        help='specify the port to listen on. '
-                        '(defaults to 4000)')
-    parser.add_argument('cprofile_output', help='The cProfile output to view.')
-    args = vars(parser.parse_args())
+    # v1 mode: Start script and render profile output.
+    sys.argv[:] = args.remainder
+    if len(args.remainder) < 0:
+        parser.print_usage()
+        sys.exit(2)
+    profile = cProfile.Profile()
+    progname = args.remainder[0]
+    sys.path.insert(0, os.path.dirname(progname))
+    with open(progname, 'rb') as fp:
+        code = compile(fp.read(), progname, 'exec')
+    globs = {
+        '__file__': progname,
+        '__name__': '__main__',
+        '__package__': None,
+    }
 
-    port = args['port']
-    address = args['address']
-    cprofile_output = args['cprofile_output']
-    quiet = not args['verbose']
+    progthread = threading.Thread(target=profile.runctx, args=(code, globs, None))
+    progthread.setDaemon(True)
+    progthread.start()
 
-    CProfileV(cprofile_output, address, port, quiet).start()
+    cprofilev = CProfileV(profile, title=progname)
+    cprofilev.start()
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        description='An easier way to use cProfile.',
+        usage='%(prog)s [--version] [-a ADDRESS] [-p PORT] scriptfile [arg] ...',
+        formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('--version', action='version', version=VERSION)
+    parser.add_argument('-a', '--address', type=str, default='127.0.0.1',
+        help='The address to listen on. (defaults to 127.0.0.1).')
+    parser.add_argument('-p', '--port', type=int, default=4000,
+        help='The port to listen on. (defaults to 4000).')
+    # Preserve v0 functionality using a flag.
+    parser.add_argument('-f', '--file', type=str,
+        help='cProfile output to view.\nIf specified, the scriptfile provided will be ignored.')
+    parser.add_argument('remainder', nargs=argparse.REMAINDER,
+        help='The python script file to run and profile.',
+        metavar="scriptfile")
+    args = parser.parse_args()
+    main(parser)

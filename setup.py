@@ -5,13 +5,13 @@ import sys
 if sys.version_info < (2,5):
     raise NotImplementedError("Sorry, you need at least Python 2.5 to use cprofilev.")
 
-VERSION = '0.1.4'
+VERSION = '1.0.0'
 
 __doc__ = """\
-A thin wrapper for viewing python cProfile output.
+An easier way to use cProfile.
 
-It provides a simple html view of the pstats.Stats object that is generated
-from when a python script is run with the -m cProfile flag.
+Outputs a simpler html view of profiled stats.
+Able to show stats while the code is still running!
 
 """
 
@@ -29,7 +29,7 @@ setup(
     """,
     install_requires=["bottle"],
     license='MIT',
-    description='Thin wrapper for viewing python cProfile output',
+    description='An easier way to use cProfile',
     long_description=__doc__,
     classifiers=[
         'Development Status :: 4 - Beta',
