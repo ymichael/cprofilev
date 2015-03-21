@@ -3,7 +3,6 @@
 import argparse
 import bottle
 import cProfile
-import logging
 import os
 import pstats
 import re
@@ -88,6 +87,8 @@ class Stats(object):
 
     @classmethod
     def process_line(cls, line):
+        # Format header lines (such that clicking on a column header sorts by
+        # that column).
         if re.search(cls.HEADER_LINE_REGEX, line):
             for key, val in cls.SORT_ARGS.items():
                 url_link = bottle.template(
@@ -95,7 +96,8 @@ class Stats(object):
                     url=cls.get_updated_href(SORT_KEY, val),
                     key=key)
                 line = line.replace(key, url_link)
-
+        # Format stat lines (such that clicking on the function name drills into
+        # the function call).
         match = re.search(cls.STATS_LINE_REGEX, line)
         if match:
             prefix = match.group(1)
@@ -108,7 +110,6 @@ class Stats(object):
                 line = bottle.template(
                     "{{ prefix }}({{ !url_link }})\n",
                     prefix=prefix, url_link=url_link)
-
         return line
 
     @classmethod
@@ -145,14 +146,6 @@ class CProfileV(object):
         self.port = port
         self.address = address
 
-        # Setup logger.
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter("%(name)s - %(asctime)s: %(message)s")
-        stream_handler = logging.StreamHandler(sys.stdout)
-        stream_handler.setFormatter(formatter)
-        self.logger.addHandler(stream_handler)
-
         # Bottle webserver.
         self.app = bottle.Bottle()
         self.app.route('/')(self.route_handler)
@@ -175,7 +168,6 @@ class CProfileV(object):
         return bottle.template(STATS_TEMPLATE, **data)
 
     def start(self):
-        self.logger.info('cProfile output available at %s:%s' % (self.address, self.port))
         self.app.run(host=self.address, port=self.port, quiet=True)
 
 
@@ -185,8 +177,12 @@ def main(parser):
         parser.print_usage()
         sys.exit(2)
 
+    info = '[cProfileV]: cProfile output available at %s:%s' % \
+        (args.address, args.port)
+
     # v0 mode: Render profile output.
     if args.file:
+        print(info)
         cprofilev = CProfileV(args.file, title=args.file)
         cprofilev.start()
         return
@@ -196,6 +192,8 @@ def main(parser):
     if len(args.remainder) < 0:
         parser.print_usage()
         sys.exit(2)
+
+    print(info)
     profile = cProfile.Profile()
     progname = args.remainder[0]
     sys.path.insert(0, os.path.dirname(progname))
@@ -207,6 +205,7 @@ def main(parser):
         '__package__': None,
     }
 
+    # Start the given program in a separate thread.
     progthread = threading.Thread(target=profile.runctx, args=(code, globs, None))
     progthread.setDaemon(True)
     progthread.start()
