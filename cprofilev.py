@@ -20,7 +20,7 @@ except ImportError:
         from io import StringIO
 
 
-VERSION = '1.0.2'
+VERSION = '1.0.3'
 
 __doc__ = """\
 An easier way to use cProfile.
