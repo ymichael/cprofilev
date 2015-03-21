@@ -1,59 +1,64 @@
-=====
+=========
 cprofilev
-=====
-A thin wrapper for viewing python's cProfile output.
-_____
+=========
+An easier way to use `cProfile <https://docs.python.org/2/library/profile.html>`_.
+______________________________
 
 about
 *****
-cprofilev is a  thin wrapper for viewing python's cProfile output. It provides
-a simple html view of the pstats.Stats object that is generated.
+cprofilev runs and profiles a given python program and outputs a a simple html view of the statistics collected.
 
-See: http://ymichael.com/2014/03/08/profiling-python-with-cprofile.html
+See: http://ymichael.com/2014/03/08/profiling-python-with-cprofile.html on how to make sense of the profiled statistics.
 
 installation
 *****
-*on most UNIX-like systems, you'll probably need to run the following
-`install` command as root or by using sudo*
-
-**pip**
+*on most UNIX-like systems, you'll probably need to run the following `install` command as root or by using sudo*
 
 ::
 
   pip install cprofilev
 
 quickstart
-*****
-1. Simply pass the cprofile output file as an argument to `cprofilev`
+**********
+
+1. Simply run your python program in with the **-m cprofilev** flag.
 
 ::
 
-  $ cprofilev /path/to/cprofile/output
+  $ python -m cprofilev /path/to/python/program ...
 
 
-2. Navigate to http://localhost:4000
+2. Navigate to http://localhost:4000 to view profile statistics of your python program (even while its still running!)
+
+
+Alternatively you can output view cprofile output using the **-f flag**:
+
+::
+
+  # NOTE this is cProfile not cprofilev
+  $ python -m cProfile -o /path/to/save/output /path/to/python/program ...
+  $ cprofilev -f /path/to/save/output
 
 usage
 *****
 
 ::
 
-  $ cprofilev --help
-  usage: cprofilev.py [-h] [--version] [-v] [-a ADDRESS] [-p PORT] cprofile_output
+  usage: cprofilev.py [--version] [-a ADDRESS] [-p PORT] scriptfile [arg] ...
 
-  Thin wrapper for viewing python cProfile output.
+  An easier way to use cProfile.
 
   positional arguments:
-    cprofile_output       The cProfile output to view.
+    scriptfile            The python script file to run and profile.
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      --version             show program's version number and exit
-      -v, --verbose
-      -a ADDRESS, --address ADDRESS
-                        specify the address to listen on. (defaults to
-                        127.0.0.1)
-      -p PORT, --port PORT  specify the port to listen on. (defaults to 4000)
+  optional arguments:
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
+    -a ADDRESS, --address ADDRESS
+                          The address to listen on. (defaults to 127.0.0.1).
+    -p PORT, --port PORT  The port to listen on. (defaults to 4000).
+    -f FILE, --file FILE  cProfile output to view.
+                          If specified, the scriptfile provided will be ignored.
 
 
 Dependencies
