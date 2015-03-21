@@ -19,7 +19,7 @@ except ImportError:
     from io import StringIO
 
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 __doc__ = """\
 An easier way to use cProfile.
@@ -172,6 +172,22 @@ class CProfileV(object):
 
 
 def main(parser):
+    parser = argparse.ArgumentParser(
+        description='An easier way to use cProfile.',
+        usage='%(prog)s [--version] [-a ADDRESS] [-p PORT] scriptfile [arg] ...',
+        formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('--version', action='version', version=VERSION)
+    parser.add_argument('-a', '--address', type=str, default='127.0.0.1',
+        help='The address to listen on. (defaults to 127.0.0.1).')
+    parser.add_argument('-p', '--port', type=int, default=4000,
+        help='The port to listen on. (defaults to 4000).')
+    # Preserve v0 functionality using a flag.
+    parser.add_argument('-f', '--file', type=str,
+        help='cProfile output to view.\nIf specified, the scriptfile provided will be ignored.')
+    parser.add_argument('remainder', nargs=argparse.REMAINDER,
+        help='The python script file to run and profile.',
+        metavar="scriptfile")
+
     args = parser.parse_args()
     if not sys.argv[1:]:
         parser.print_usage()
@@ -215,20 +231,4 @@ def main(parser):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='An easier way to use cProfile.',
-        usage='%(prog)s [--version] [-a ADDRESS] [-p PORT] scriptfile [arg] ...',
-        formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--version', action='version', version=VERSION)
-    parser.add_argument('-a', '--address', type=str, default='127.0.0.1',
-        help='The address to listen on. (defaults to 127.0.0.1).')
-    parser.add_argument('-p', '--port', type=int, default=4000,
-        help='The port to listen on. (defaults to 4000).')
-    # Preserve v0 functionality using a flag.
-    parser.add_argument('-f', '--file', type=str,
-        help='cProfile output to view.\nIf specified, the scriptfile provided will be ignored.')
-    parser.add_argument('remainder', nargs=argparse.REMAINDER,
-        help='The python script file to run and profile.',
-        metavar="scriptfile")
-    args = parser.parse_args()
-    main(parser)
+    main()
