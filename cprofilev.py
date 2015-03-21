@@ -19,7 +19,7 @@ except ImportError:
     from io import StringIO
 
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 __doc__ = """\
 An easier way to use cProfile.
@@ -171,7 +171,7 @@ class CProfileV(object):
         self.app.run(host=self.address, port=self.port, quiet=True)
 
 
-def main(parser):
+def main():
     parser = argparse.ArgumentParser(
         description='An easier way to use cProfile.',
         usage='%(prog)s [--version] [-a ADDRESS] [-p PORT] scriptfile [arg] ...',

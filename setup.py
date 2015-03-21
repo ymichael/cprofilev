@@ -6,7 +6,7 @@ if sys.version_info < (2,5):
     raise NotImplementedError(
         "Sorry, you need at least Python 2.5 to use cprofilev.")
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 __doc__ = """\
 An easier way to use cProfile.
