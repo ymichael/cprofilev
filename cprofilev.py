@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import argparse
 import bottle
@@ -7,16 +8,16 @@ import os
 import pstats
 import re
 import sys
-import tempfile
 import threading
 
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
-except ImportError:
-    # Python 3 compatibility.
-    from io import StringIO
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        # Python 3 compatibility.
+        from io import StringIO
 
 
 VERSION = '1.0.2'
