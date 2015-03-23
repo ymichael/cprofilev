@@ -200,7 +200,7 @@ def main():
     # v0 mode: Render profile output.
     if args.file:
         print(info)
-        cprofilev = CProfileV(args.file, title=args.file)
+        cprofilev = CProfileV(args.file, title=args.file, address=args.address, port=args.port)
         cprofilev.start()
         return
 
@@ -227,7 +227,7 @@ def main():
     progthread.setDaemon(True)
     progthread.start()
 
-    cprofilev = CProfileV(profile, title=progname)
+    cprofilev = CProfileV(profile, title=progname, address=args.address, port=args.port)
     cprofilev.start()
 
 
