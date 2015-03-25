@@ -6,7 +6,7 @@ ______________________________
 
 about
 *****
-cprofilev runs and profiles a given python program and outputs a a simple html view of the statistics collected.
+cprofilev runs and profiles a given python program and outputs a simple html view of the statistics collected.
 
 See: http://ymichael.com/2014/03/08/profiling-python-with-cprofile.html on how to make sense of the profiled statistics.
 
