@@ -19,7 +19,7 @@ except ImportError:
         from io import StringIO
 
 
-VERSION = '1.0.4'
+VERSION = '1.0.5'
 
 __doc__ = """\
 An easier way to use cProfile.
@@ -190,7 +190,7 @@ def main():
 
     args = parser.parse_args()
     if not sys.argv[1:]:
-        parser.print_usage()
+        parser.print_help()
         sys.exit(2)
 
     info = '[cProfileV]: cProfile output available at %s:%s' % \
@@ -206,7 +206,7 @@ def main():
     # v1 mode: Start script and render profile output.
     sys.argv[:] = args.remainder
     if len(args.remainder) < 0:
-        parser.print_usage()
+        parser.print_help()
         sys.exit(2)
 
     print(info)
