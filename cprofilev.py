@@ -193,7 +193,7 @@ def main():
         parser.print_help()
         sys.exit(2)
 
-    info = '[cProfileV]: cProfile output available at %s:%s' % \
+    info = '[cProfileV]: cProfile output available at http://%s:%s' % \
         (args.address, args.port)
 
     # v0 mode: Render profile output.
