@@ -198,7 +198,7 @@ def main():
 
     # v0 mode: Render profile output.
     if args.file:
-        print(info)
+        sys.stderr.write(info + "\n")
         cprofilev = CProfileV(args.file, title=args.file, address=args.address, port=args.port)
         cprofilev.start()
         return
@@ -209,7 +209,7 @@ def main():
         parser.print_help()
         sys.exit(2)
 
-    print(info)
+    sys.stderr.write(info + "\n")
     profile = cProfile.Profile()
     progname = args.remainder[0]
     sys.path.insert(0, os.path.dirname(progname))
