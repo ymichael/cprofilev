@@ -198,6 +198,8 @@ def main():
 
     # v0 mode: Render profile output.
     if args.file:
+        # Note: The info message is sent to stderr to keep stdout clean in case
+        # the profiled script writes some output to stdout
         sys.stderr.write(info + "\n")
         cprofilev = CProfileV(args.file, title=args.file, address=args.address, port=args.port)
         cprofilev.start()
@@ -208,7 +210,9 @@ def main():
     if len(args.remainder) < 0:
         parser.print_help()
         sys.exit(2)
-
+        
+    # Note: The info message is sent to stderr to keep stdout clean in case
+    # the profiled script writes some output to stdout
     sys.stderr.write(info + "\n")
     profile = cProfile.Profile()
     progname = args.remainder[0]
