@@ -210,15 +210,24 @@ def main():
     if len(args.remainder) < 0:
         parser.print_help()
         sys.exit(2)
-        
-    # Note: The info message is sent to stderr to keep stdout clean in case
-    # the profiled script writes some output to stdout
-    sys.stderr.write(info + "\n")
+
     profile = cProfile.Profile()
     progname = args.remainder[0]
     sys.path.insert(0, os.path.dirname(progname))
     with open(progname, 'rb') as fp:
-        code = compile(fp.read(), progname, 'exec')
+        try:
+            code = compile(fp.read(), progname, 'exec')
+        except (TypeError, SyntaxError) as e:
+            sys.stderr.write(
+                '[cProfileV]: there was a problem compiling your scriptfile.' + '\n\n'
+            )
+            parser.print_help()
+            sys.exit(2)
+
+    # Note: The info message is sent to stderr to keep stdout clean in case
+    # the profiled script writes some output to stdout
+    sys.stderr.write(info + "\n")
+
     globs = {
         '__file__': progname,
         '__name__': '__main__',
