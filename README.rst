@@ -64,3 +64,12 @@ usage
 Dependencies
 *****
 `bottle <http://bottlepy.org>`_: used for serving the html page.
+
+
+Development
+*****
+
+To quickly contribute to cprofilev, you can use this example as a means to
+profile things::
+
+    python -m cprofilev example_for_profiling.py
